@@ -1,37 +1,49 @@
-# MEDERGENCY — Life Deserves Care
+# MEDERGENCY
 
-A responsive multi-page frontend built with HTML5, CSS3 and vanilla JavaScript. No frontend frameworks or runtime dependencies.
+**Life Deserves Care** · Built for India. Designed for the World.
 
-## Run
+A responsive healthcare interface built with HTML5, CSS3 and vanilla JavaScript. No frontend frameworks or runtime dependencies.
 
-Use Node.js 20+ and run `npm run dev`, then open http://127.0.0.1:4173. Run `npm run build` to create static public output in `dist/`.
+## Run locally
 
-## Demo journey
+With Node.js 20 or newer, run `npm run dev` and open http://127.0.0.1:4173. Run `npm run build` to produce the static site in `dist/`.
 
-Find Doctors → View Profile → Choose Video/Audio, date and slot → Patient Details → Review → Simulated Payment → Confirmation → Waiting Room → Mock Call → Completed → Sample Prescription.
+## Features
 
-Use fictional patient details. Sign in with the demo shortcut or a sample Indian mobile number and OTP `123456`. Payments accept supplied sample values and do not send requests or store payment fields. Calls do not access a camera or microphone. Chat messages stay in memory. Prescriptions contain no treatment and support printing / Save as PDF.
+- Doctor discovery, specialty and availability filters, price and experience filters, sorting and saved doctors.
+- Doctor profiles, video/audio selection, date and time availability, patient details and booking review.
+- Payment-method selection and locally saved appointment confirmation without collecting money.
+- Patient dashboard, consultation history, rescheduling, cancellation and notifications.
+- Waiting room, session timer, consultation controls and room-local messages.
+- Prescription records with doctor-review status, print and Save as PDF support.
+- Local sign-in, six-digit access code, guest access, editable profile and language preferences.
+- Support request storage, help center, FAQs, privacy information and account settings.
+- Responsive layouts, keyboard focus, accessible menus and dialogs, reduced-motion support and error states.
 
-Appointments (sample patient name only), saved doctors, demo profile, notification history and preferences use namespaced LocalStorage. Booking details temporarily use SessionStorage and are removed after confirmation. Settings provides a demo data reset. This is not secure storage for sensitive information.
+## Structure
 
-## Architecture
+- `js/main.js` — page routing, homepage, directory and shared interactions.
+- `js/ui.js` — navigation, wordmark, cards, icons, dialogs and validation.
+- `js/booking.js` — appointment and consultation flow.
+- `js/account.js` — profile, records, settings, notifications and support.
+- `js/data.js` — directory entries, specialties, slots and FAQs.
+- `js/scheduling.js` — past-time checks and local booking conflicts.
+- `js/storage.js` — namespaced local persistence and text escaping.
+- `css/style.css` and `css/responsive.css` — visual tokens, components and breakpoints.
+- 24 HTML entry pages share the same components and design system.
 
-- `js/data.js`: illustrative doctor records, FAQs and slots.
-- `js/storage.js`: namespaced browser storage and escaping.
-- `js/ui.js`: shared header, footer, icons, cards, modals and form validation.
-- `js/main.js`: page dispatch, homepage, directory filters, general pages and optional WebMCP directory filtering.
-- `js/booking.js`: profile, booking and consultation flow.
-- `js/account.js`: patient account, demo authentication, records, settings and support.
-- `css/style.css`, `css/responsive.css`: shared tokens, components and responsive rules.
+## Service connections
 
-There are 24 connected HTML entry pages. The English interface is implemented; other languages are visibly marked as planned. No external authentication, medical service, SMS, payment provider or support delivery is connected. Live deployment would require all these backend integrations plus professionally reviewed privacy, legal and clinical processes.
+The site currently runs entirely in the browser. Appointments are saved on the current device and have not been accepted by a clinician. Payment entries are not sent or retained. Calls do not access the camera or microphone. Chat stays in the current room. Support requests are saved locally, not delivered. Prescriptions remain unsigned and contain no medication or treatment.
 
-## Brand and imagery
+Server-backed patient accounts, SMS verification, verified clinician records, live scheduling, payment collection, audio/video communication, prescription signing and support delivery require backend integrations before live healthcare use. Privacy, legal and clinical processes also need professional review before launch.
 
-No original logo was present in the supplied attachments or project. A plain text wordmark is used, not a recreation of an original logo. Replace it with the exact supplied brand asset when available. The main physician portrait was generated using the built-in image generator and is an illustrative fictional person. Other doctors use graceful initials placeholders.
+The local access code is `123456`. This creates only a browser-local session and is not a security boundary. Do not put sensitive medical information into browser storage. Settings provides a local-data reset.
 
-Image prompt: Welcoming Indian woman physician around 35, tied-back dark hair, white coat over pale blue blouse, stethoscope, seated in a bright modern clinic, warm camera-facing expression, natural daylight, pale cool blue background, authentic editorial photography, portrait 4:5 composition, no text or logos.
+## Brand assets
 
-## Verification
+The existing MEDERGENCY text wordmark is preserved. No original logo image was supplied. Doctor cards and the consultation interface use consistent initials avatars; no physician photographs are included.
 
-JavaScript syntax checks and static output build are available with `npm run check` and `npm run build`. Responsive layouts include 320px phones through wide desktops. Browser verification details are recorded in VALIDATION.md.
+## Validation
+
+`npm run check` checks JavaScript syntax. `npm run build` packages the public files. See `VALIDATION.md` for the browser and responsive checks performed.

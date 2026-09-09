@@ -1,1 +1,11 @@
-{"name":"medergency","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node server.mjs","build":"node build.mjs","check":"node --check js/main.js && node --check js/booking.js && node --check js/account.js"}}
+{
+  "name": "medergency",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node build.mjs",
+    "check": "node --check js/main.js && node --check js/booking.js && node --check js/account.js && node --check js/ui.js && node --check js/data.js && node --check js/storage.js && node --check js/scheduling.js"
+  }
+}

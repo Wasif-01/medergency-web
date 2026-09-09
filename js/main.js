@@ -1,19 +1,347 @@
-import {doctors,faqs,findDoctor} from './data.js';
-import {storage,escapeHTML as e} from './storage.js';
-import {header,footer,icon,doctorCard,pageTitle,toast,modal} from './ui.js';
-const page=location.pathname.split('/').pop()||'index.html';
-document.body.innerHTML=`${header()}<main id="main"></main>${footer()}<dialog id="modal" aria-modal="true"></dialog><div id="toast" class="toast" role="status" aria-live="polite"></div>`;
-const main=document.querySelector('main');
-const faqList=()=>`<div class="faq-list">${faqs.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
-function home(){main.innerHTML=`<section class="hero"><div class="container hero-grid"><div class="hero-copy"><span class="pill">${icon('shield')} TRUSTED ONLINE HEALTHCARE</span><h1>Consult a Doctor.<br><span>Connect in Minutes.</span></h1><p>Care that fits into your life. Talk to qualified doctors online, from the comfort of your home.</p><div class="actions"><a class="btn" href="doctors.html">${icon('video')} Consult Now ${icon('arrow')}</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div><div class="hero-checks">${['Qualified doctors','Private consultations','Transparent pricing','Digital prescriptions'].map(x=>`<span>${icon('check')}${x}</span>`).join('')}</div></div><div class="hero-visual"><div class="photo-frame"><img src="assets/doctor.jpg" alt="Welcoming Indian physician in a bright clinic" fetchpriority="high"><div class="live-label"><i class="dot"></i>Here when you need care</div><div class="video-bar"><div><strong>Dr. Ananya Sharma</strong><small>General Physician · MBBS, MD</small></div><span class="icon-btn">${icon('video')}</span></div></div><div class="floating-card connect"><span class="icon-tile green">${icon('check')}</span><div><strong>A little care. A lot of relief.</strong><small>Connect from wherever you are</small></div></div><div class="floating-card prescription"><span class="icon-tile">${icon('file')}</span><div><strong>Your care, all in one place.</strong><small>Digital prescriptions · Save & download</small></div></div><span class="hero-footnote">Illustrative doctor profile · Explore the frontend demo</span></div></div></section><section class="trust-bar"><div class="container trust-items">${[['stethoscope','Qualified Doctors'],['video','Secure Consultations'],['lock','Private & Confidential'],['check','Transparent Pricing'],['file','Digital Prescriptions']].map(([i,t])=>`<div>${icon(i)}${t}</div>`).join('')}</div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">THE RIGHT CARE STARTS HERE</span><h2>Find the right doctor.</h2><p>Choose a specialist based on your health concern.</p></div><a class="text-link" href="doctors.html">Explore specialties ${icon('arrow')}</a></div><div class="specialties">${[['stethoscope','General Physician','Fever, cold, cough & everyday health concerns.'],['flower','Gynecologist','Periods, women’s health & reproductive care.'],['brain','Psychiatrist','A listening ear for stress & mental wellbeing.']].map(([i,t,p])=>`<a class="specialty-card" href="doctors.html?specialty=${encodeURIComponent(t)}"><span class="icon-tile">${icon(i)}</span><div><h3>${t}</h3><p>${p}</p><span class="text-link">View doctors ${icon('arrow')}</span></div></a>`).join('')}</div></div></section><section class="section soft"><div class="container"><div class="section-head"><div><span class="eyebrow">A CONVERSATION AWAY</span><h2>Doctors available now.</h2><p>Experienced professionals. Thoughtful, personal care.</p></div><a class="text-link" href="doctors.html">View all doctors ${icon('arrow')}</a></div><div class="doctor-grid">${doctors.map(doctorCard).join('')}</div><p class="section-note">Illustrative doctor profiles and availability. Consultations and payments are simulated.</p></div></section><section class="section" id="how-it-works"><div class="container"><div class="center"><span class="eyebrow">SIMPLE FROM THE VERY FIRST STEP</span><h2>Better care. Less effort.</h2><p>From finding your doctor to your follow-up, we keep it simple.</p></div><div class="steps">${[['Choose a specialist','Start with what you need help with.'],['Find your doctor','Choose experience, language & availability.'],['Book your time','Pick video or audio and a convenient slot.'],['Connect & consult','A private conversation, wherever you are.'],['Keep your prescription','Your care records, easy to find anytime.']].map(([t,p],i)=>`<div class="step"><span class="step-number">0${i+1}</span><h3>${t}</h3><p>${p}</p></div>`).join('')}</div></div></section><section class="section family-section"><div class="container family-panel"><div><span class="eyebrow">FOR EVERYONE YOU CARE ABOUT</span><h2>Healthcare for you.<br>And your whole family.</h2><p>Simple online consultations designed to be easy for everyone in your family. A familiar face. A reassuring conversation.</p><a class="text-link" href="doctors.html">Find care for your family ${icon('arrow')}</a></div><div class="family-list">${[['heart','Care that listens','Time to talk. Space to ask questions.'],['phone','As easy as a conversation','Video or audio — whatever feels comfortable.'],['file','One place for your care','Appointments and prescriptions, together.']].map(([i,t,p])=>`<div><span class="icon-tile">${icon(i)}</span><div><h3>${t}</h3><p>${p}</p></div></div>`).join('')}</div></div></section><section class="section soft"><div class="container faq-grid"><div><span class="eyebrow">A LITTLE CLARITY HELPS</span><h2>Good questions.<br>Clear answers.</h2><p>Everything you need to feel comfortable taking the next step.</p><a class="text-link" href="support.html">Visit our help center ${icon('arrow')}</a></div>${faqList()}</div></section><section class="section"><div class="container cta"><div><h2>Need a doctor?<br>We’re here to help.</h2><p>Thoughtful care starts with a simple conversation.</p></div><div><div class="actions"><a class="btn" href="doctors.html">Consult Now ${icon('arrow')}</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div><small>Safe. Private. Simple.</small></div></div></section>`}
-function directory(saved=false){main.className='container page';main.innerHTML=`${pageTitle(saved?'YOUR CARE TEAM':'FIND YOUR CARE',''+(saved?'Saved Doctors':'A good doctor. The right fit.'),saved?'Your favourite doctors, together in one place.':'Find someone who understands your health concerns.')}<div class="search-box">${icon('search')}<input id="doctor-search" aria-label="Search doctors or specialties" placeholder="Search doctors, specialties or qualifications"></div><button class="btn secondary filter-toggle" id="filter-toggle" aria-expanded="false">Filters ${icon('plus')}</button><div class="filter-region" id="filter-region"><div class="filters">${[['specialty','Specialty',['All specialties','General Physician','Gynecologist','Psychiatrist']],['availability','Availability',['Any availability','Available Now','Available Today']],['type','Consultation type',['Any type','Video','Audio']],['fee','Consultation fee',['Any fee','Under ₹300','Under ₹400','Under ₹500']],['experience','Experience',['Any experience','8+ years','10+ years']],['rating','Minimum rating',['Any rating','4.8+','4.9+']]].map(([id,l,options])=>`<label class="field">${l}<select id="filter-${id}">${options.map((v,i)=>`<option value="${i?e(v):''}">${v}</option>`).join('')}</select></label>`).join('')}</div><div class="actions"><button class="btn ghost small" id="clear">Clear All</button><button class="btn small mobile-only" id="show-results">Show Results</button></div></div><div class="search-toolbar"><span id="result-count" aria-live="polite"></span><select aria-label="Sort doctors" id="sort"><option value="recommended">Recommended</option><option value="rating">Highest rating</option><option value="experience">Most experienced</option><option value="low">Fee: Low to high</option><option value="high">Fee: High to low</option></select></div><div id="results" class="doctor-grid"></div><p class="section-note">All profiles, reviews and availability are illustrative demo data.</p>`;
-const initial=new URLSearchParams(location.search).get('specialty');if(initial)document.querySelector('#filter-specialty').value=initial;
-const update=()=>{const val=id=>document.querySelector(id).value;const query=val('#doctor-search').toLowerCase();const spec=val('#filter-specialty'),av=val('#filter-availability'),type=val('#filter-type');const fee=Number(val('#filter-fee').replace(/\D/g,'')),ex=Number(val('#filter-experience').replace(/\D/g,'')),rating=parseFloat(val('#filter-rating'))||0;let matches=doctors.filter(d=>(!saved||storage.get('favorites',[]).includes(d.id))&&(`${d.name} ${d.specialty} ${d.qualification}`.toLowerCase().includes(query))&&(!spec||d.specialty===spec)&&(!av||d.availability===av)&&(!type||d.types.includes(type))&&(!fee||d.fee<fee)&&d.experience>=ex&&d.rating>=rating);const sort=val('#sort');matches.sort((a,b)=>sort==='rating'?b.rating-a.rating:sort==='experience'?b.experience-a.experience:sort==='low'?a.fee-b.fee:sort==='high'?b.fee-a.fee:a.id-b.id);document.querySelector('#result-count').textContent=`${matches.length} doctor${matches.length===1?'':'s'} found`;document.querySelector('#results').innerHTML=matches.length?matches.map(doctorCard).join(''):`<div class="empty span-two"><h2>${saved?'No saved doctors yet':'No doctors found'}</h2><p>Try changing your search or filters.</p><button class="btn" id="clear-empty">Clear Filters</button></div>`;document.querySelector('#clear-empty')?.addEventListener('click',clear)};
-function clear(){document.querySelectorAll('.filters select').forEach(x=>x.value='');document.querySelector('#doctor-search').value='';update()}
-document.querySelector('#clear').onclick=clear;document.querySelectorAll('select').forEach(x=>x.onchange=update);document.querySelector('#doctor-search').oninput=update;document.querySelector('#filter-toggle').onclick=()=>{const region=document.querySelector('#filter-region');region.classList.toggle('open');document.querySelector('#filter-toggle').setAttribute('aria-expanded',region.classList.contains('open'))};document.querySelector('#show-results').onclick=()=>{document.querySelector('#filter-region').classList.remove('open');document.querySelector('#filter-toggle').setAttribute('aria-expanded','false')};document.addEventListener('favorites-changed',()=>{if(saved)update()});update()}
-function info(){main.className='container page';if(page==='about.html'){main.innerHTML=`${pageTitle('LIFE DESERVES CARE','Healthcare that feels simple.','Built for India. Designed for the World.')}<div class="family-panel"><div><h2>Care starts<br>with a conversation.</h2><p>Medergency brings the essential parts of online care into one thoughtful experience: finding your doctor, booking a time and keeping your consultation records together.</p><a class="btn" href="doctors.html">Find a Doctor ${icon('arrow')}</a></div><div class="family-list">${[['clock','Quick access'],['stethoscope','Qualified doctors'],['lock','Private experience'],['file','Digital prescriptions']].map(([i,t])=>`<div><span class="icon-tile">${icon(i)}</span><h3>${t}</h3></div>`).join('')}</div></div><div class="notice">This is a frontend demonstration of the Medergency experience. Doctor profiles and services are illustrative; no live medical service is provided.</div>`}else if(page==='privacy.html'||page==='terms.html'){const privacy=page==='privacy.html';main.innerHTML=`<div class="prose">${pageTitle('MEDERGENCY',privacy?'Privacy & your demo data':'Terms of this demonstration')}<div class="notice">Demonstration information only. A live service requires its own reviewed legal policies.</div><h2>${privacy?'What stays in your browser':'What you can explore'}</h2><p>${privacy?'Saved doctors, sample appointments, demo profile preferences and notifications are saved locally on this device. They are not sent to a Medergency backend. Use invented details only; browser storage is not appropriate for sensitive medical information.':'This website demonstrates doctor discovery, booking, simulated payment, a mock consultation and sample prescription records. It does not provide medical advice, authenticated accounts, real payments or communication with doctors.'}</p><h2>${privacy?'Payments and calls':'Illustrative profiles and documents'}</h2><p>${privacy?'Payment inputs are not saved or transmitted. Camera and microphone controls only change the demonstration interface and do not activate your devices. Fonts may load from Google Fonts.':'Doctor names, qualifications, ratings and availability are sample content. Sample prescriptions are not valid medical documents and must not be used for treatment.'}</p><h2>${privacy?'Clear your data':'Emergency care'}</h2><p>${privacy?'You can remove all local demo information in Settings. Signing out ends the demo session but preserves saved records on this browser.':'For medical emergencies, contact your local emergency services or go to the nearest emergency facility.'}</p><a class="btn secondary" href="${privacy?'settings.html':'support.html'}">${privacy?'Manage demo data':'Contact support'}</a></div>`}else{main.innerHTML=`<div class="empty"><span class="eyebrow">404 · A LITTLE DETOUR</span><h1>This page seems to have<br>taken a wrong turn.</h1><p>Let’s get you back to the care you’re looking for.</p><div class="actions center"><a class="btn" href="index.html">Go Home</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div></div>`}}
-if(page==='index.html')home();else if(page==='doctors.html'||page==='saved-doctors.html')directory(page==='saved-doctors.html');else if(['doctor-profile.html','booking.html','payment.html','confirmation.html','waiting-room.html','consultation.html','completed.html'].includes(page)){const {renderBooking}=await import('./booking.js');renderBooking(main,page)}else if(['dashboard.html','consultations.html','prescriptions.html','prescription-view.html','profile.html','settings.html','notifications.html','login.html','otp.html','support.html'].includes(page)){const {renderAccount}=await import('./account.js');renderAccount(main,page)}else info();
-document.querySelector('.menu-toggle').onclick=()=>{const nav=document.querySelector('#navigation');nav.classList.toggle('open');document.querySelector('.menu-toggle').setAttribute('aria-expanded',nav.classList.contains('open'));document.querySelector('.menu-toggle').setAttribute('aria-label',nav.classList.contains('open')?'Close navigation':'Open navigation');document.body.style.overflow=nav.classList.contains('open')?'hidden':''};document.querySelector('#navigation').addEventListener('click',event=>{if(event.target.closest('a')){document.querySelector('#navigation').classList.remove('open');document.body.style.overflow=''}});document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelector('#navigation').classList.remove('open');document.querySelector('.menu-toggle').setAttribute('aria-expanded','false');document.body.style.overflow=''}});
-document.addEventListener('click',event=>{const button=event.target.closest('[data-favorite]');if(!button)return;const id=Number(button.dataset.favorite),saved=storage.get('favorites',[]),exists=saved.includes(id);storage.set('favorites',exists?saved.filter(x=>x!==id):[...saved,id]);button.classList.toggle('saved',!exists);button.setAttribute('aria-pressed',!exists);toast(exists?'Doctor removed from saved list.':'Doctor saved.');document.dispatchEvent(new Event('favorites-changed'))});
-const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('reveal');observer.unobserve(entry.target)}}),{threshold:.1});document.querySelectorAll('.specialty-card,.step,.family-panel').forEach(el=>observer.observe(el));
-if(document.querySelector('#doctor-search')&&document.modelContext?.registerTool){try{const lifecycle=new AbortController();document.modelContext.registerTool({name:'filter_demo_doctors',title:'Filter demo doctors',description:'Filter the visible doctor directory by name, specialty or qualification. Does not book a consultation.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(input){if(typeof input?.query!=='string'||input.query.length>100)throw new Error('Provide a query of at most 100 characters.');const search=document.querySelector('#doctor-search');if(!search)throw new Error('Open the Find Doctors page first.');search.value=input.query;search.dispatchEvent(new Event('input',{bubbles:true}));return {result:document.querySelector('#result-count').textContent};}},{signal:lifecycle.signal});window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true})}catch{}}
+import { doctors, faqs, findDoctor } from "./data.js";
+import { storage, escapeHTML as e } from "./storage.js";
+import {
+  header,
+  footer,
+  icon,
+  doctorCard,
+  pageTitle,
+  toast,
+  modal,
+} from "./ui.js";
+const page = location.pathname.split("/").pop() || "index.html";
+document.body.innerHTML = `${header()}<main id="main"></main>${footer()}<dialog id="modal" aria-modal="true"></dialog><div id="toast" class="toast" role="status" aria-live="polite"></div>`;
+const main = document.querySelector("main");
+const faqList = () =>
+  `<div class="faq-list">${faqs.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</div>`;
+function home() {
+  main.innerHTML = `<section class="hero"><div class="container hero-grid"><div class="hero-copy"><span class="pill">${icon("shield")} TRUSTED ONLINE HEALTHCARE</span><h1>Consult a Doctor.<br><span>Connect in Minutes.</span></h1><p>Care that fits into your life. Talk to qualified doctors online, from the comfort of your home.</p><div class="actions"><a class="btn" href="doctors.html">${icon("video")} Consult Now ${icon("arrow")}</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div><div class="hero-checks">${["Qualified doctors", "Private consultations", "Transparent pricing", "Digital prescriptions"].map((x) => `<span>${icon("check")}${x}</span>`).join("")}</div></div><div class="hero-visual"><div class="care-window"><div class="care-window-top"><span class="mini-brand">MEDERGENCY</span><span>${icon("lock")} YOUR CARE SPACE</span></div><div class="care-window-profile"><div class="avatar blue hero-avatar" role="img" aria-label="Dr. Ananya Sharma, initials AS"><span>AS</span></div><span class="availability"><i></i>General Physician</span><h2>Dr. Ananya Sharma</h2><p>MBBS, MD · 8+ years experience</p><div class="care-language">English & Hindi <span>·</span> ${icon("star")} 4.8</div></div><div class="care-window-options"><a href="doctor-profile.html?id=1">${icon("video")}<span>Video consultation<small>A face-to-face conversation</small></span>${icon("arrow")}</a><a href="doctor-profile.html?id=1">${icon("phone")}<span>Audio consultation<small>Care, just a call away</small></span>${icon("arrow")}</a></div><div class="care-window-bottom"><span>Consultation from <strong>₹299</strong></span><a href="doctor-profile.html?id=1" class="text-link">Choose a time ${icon("arrow")}</a></div></div><div class="floating-card prescription"><span class="icon-tile green">${icon("file")}</span><div><strong>Your care, all in one place.</strong><small>Appointments & prescriptions, together</small></div></div></div></div></section><section class="trust-bar"><div class="container trust-items">${[
+    ["stethoscope", "Qualified Doctors"],
+    ["video", "Secure Consultations"],
+    ["lock", "Private & Confidential"],
+    ["check", "Transparent Pricing"],
+    ["file", "Digital Prescriptions"],
+  ]
+    .map(([i, t]) => `<div>${icon(i)}${t}</div>`)
+    .join(
+      "",
+    )}</div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">THE RIGHT CARE STARTS HERE</span><h2>Find the right doctor.</h2><p>Choose a specialist based on your health concern.</p></div><a class="text-link" href="doctors.html">Explore specialties ${icon("arrow")}</a></div><div class="specialties">${[
+    [
+      "stethoscope",
+      "General Physician",
+      "Fever, cold, cough & everyday health concerns.",
+    ],
+    ["flower", "Gynecologist", "Periods, women’s health & reproductive care."],
+    ["brain", "Psychiatrist", "A listening ear for stress & mental wellbeing."],
+  ]
+    .map(
+      ([i, t, p]) =>
+        `<a class="specialty-card" href="doctors.html?specialty=${encodeURIComponent(t)}"><span class="icon-tile">${icon(i)}</span><div><h3>${t}</h3><p>${p}</p><span class="text-link">View doctors ${icon("arrow")}</span></div></a>`,
+    )
+    .join(
+      "",
+    )}</div></div></section><section class="section soft"><div class="container"><div class="section-head"><div><span class="eyebrow">A CONVERSATION AWAY</span><h2>Doctors available now.</h2><p>Experienced professionals. Thoughtful, personal care.</p></div><a class="text-link" href="doctors.html">View all doctors ${icon("arrow")}</a></div><div class="doctor-grid">${doctors.map(doctorCard).join("")}</div><p class="section-note">Video or audio. Clear fees. Care on your terms.</p></div></section><section class="section" id="how-it-works"><div class="container"><div class="center"><span class="eyebrow">SIMPLE FROM THE VERY FIRST STEP</span><h2>Better care. Less effort.</h2><p>From finding your doctor to your follow-up, we keep it simple.</p></div><div class="steps">${[
+    ["Choose a specialist", "Start with what you need help with."],
+    ["Find your doctor", "Choose experience, language & availability."],
+    ["Book your time", "Pick video or audio and a convenient slot."],
+    ["Connect & consult", "A private conversation, wherever you are."],
+    ["Keep your prescription", "Your care records, easy to find anytime."],
+  ]
+    .map(
+      ([t, p], i) =>
+        `<div class="step"><span class="step-number">0${i + 1}</span><h3>${t}</h3><p>${p}</p></div>`,
+    )
+    .join(
+      "",
+    )}</div></div></section><section class="section family-section"><div class="container family-panel"><div><span class="eyebrow">FOR EVERYONE YOU CARE ABOUT</span><h2>Healthcare for you.<br>And your whole family.</h2><p>Simple online consultations designed to be easy for everyone in your family. A familiar face. A reassuring conversation.</p><a class="text-link" href="doctors.html">Find care for your family ${icon("arrow")}</a></div><div class="family-list">${[
+    ["heart", "Care that listens", "Time to talk. Space to ask questions."],
+    [
+      "phone",
+      "As easy as a conversation",
+      "Video or audio — whatever feels comfortable.",
+    ],
+    [
+      "file",
+      "One place for your care",
+      "Appointments and prescriptions, together.",
+    ],
+  ]
+    .map(
+      ([i, t, p]) =>
+        `<div><span class="icon-tile">${icon(i)}</span><div><h3>${t}</h3><p>${p}</p></div></div>`,
+    )
+    .join(
+      "",
+    )}</div></div></section><section class="section soft"><div class="container faq-grid"><div><span class="eyebrow">A LITTLE CLARITY HELPS</span><h2>Good questions.<br>Clear answers.</h2><p>Everything you need to feel comfortable taking the next step.</p><a class="text-link" href="support.html">Visit our help center ${icon("arrow")}</a></div>${faqList()}</div></section><section class="section"><div class="container cta"><div><h2>Need a doctor?<br>We’re here to help.</h2><p>Thoughtful care starts with a simple conversation.</p></div><div><div class="actions"><a class="btn" href="doctors.html">Consult Now ${icon("arrow")}</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div><small>Safe. Private. Simple.</small></div></div></section>`;
+}
+function directory(saved = false) {
+  main.className = "container page";
+  main.innerHTML = `${pageTitle(saved ? "YOUR CARE TEAM" : "FIND YOUR CARE", "" + (saved ? "Saved Doctors" : "A good doctor. The right fit."), saved ? "Your favourite doctors, together in one place." : "Find someone who understands your health concerns.")}<div class="search-box">${icon("search")}<input id="doctor-search" aria-label="Search doctors or specialties" placeholder="Search doctors, specialties or qualifications"></div><button class="btn secondary filter-toggle" id="filter-toggle" aria-expanded="false">Filters ${icon("plus")}</button><div class="filter-region" id="filter-region"><div class="filters">${[
+    [
+      "specialty",
+      "Specialty",
+      ["All specialties", "General Physician", "Gynecologist", "Psychiatrist"],
+    ],
+    [
+      "availability",
+      "Availability",
+      ["Any availability", "Available Now", "Available Today"],
+    ],
+    ["type", "Consultation type", ["Any type", "Video", "Audio"]],
+    [
+      "fee",
+      "Consultation fee",
+      ["Any fee", "Under ₹300", "Under ₹400", "Under ₹500"],
+    ],
+    ["experience", "Experience", ["Any experience", "8+ years", "10+ years"]],
+    ["rating", "Minimum rating", ["Any rating", "4.8+", "4.9+"]],
+  ]
+    .map(
+      ([id, l, options]) =>
+        `<label class="field">${l}<select id="filter-${id}">${options.map((v, i) => `<option value="${i ? e(v) : ""}">${v}</option>`).join("")}</select></label>`,
+    )
+    .join(
+      "",
+    )}</div><div class="actions"><button class="btn ghost small" id="clear">Clear All</button><button class="btn small mobile-only" id="show-results">Show Results</button></div></div><div class="search-toolbar"><span id="result-count" aria-live="polite"></span><select aria-label="Sort doctors" id="sort"><option value="recommended">Recommended</option><option value="rating">Highest rating</option><option value="experience">Most experienced</option><option value="low">Fee: Low to high</option><option value="high">Fee: High to low</option></select></div><div id="results" class="doctor-grid"></div><p class="section-note">Choose the right fit for your care.</p>`;
+  const initial = new URLSearchParams(location.search).get("specialty");
+  if (initial) document.querySelector("#filter-specialty").value = initial;
+  const update = () => {
+    const val = (id) => document.querySelector(id).value;
+    const query = val("#doctor-search").toLowerCase();
+    const spec = val("#filter-specialty"),
+      av = val("#filter-availability"),
+      type = val("#filter-type");
+    const fee = Number(val("#filter-fee").replace(/\D/g, "")),
+      ex = Number(val("#filter-experience").replace(/\D/g, "")),
+      rating = parseFloat(val("#filter-rating")) || 0;
+    let matches = doctors.filter(
+      (d) =>
+        (!saved || storage.get("favorites", []).includes(d.id)) &&
+        `${d.name} ${d.specialty} ${d.qualification}`
+          .toLowerCase()
+          .includes(query) &&
+        (!spec || d.specialty === spec) &&
+        (!av || d.availability === av) &&
+        (!type || d.types.includes(type)) &&
+        (!fee || d.fee < fee) &&
+        d.experience >= ex &&
+        d.rating >= rating,
+    );
+    const sort = val("#sort");
+    matches.sort((a, b) =>
+      sort === "rating"
+        ? b.rating - a.rating
+        : sort === "experience"
+          ? b.experience - a.experience
+          : sort === "low"
+            ? a.fee - b.fee
+            : sort === "high"
+              ? b.fee - a.fee
+              : a.id - b.id,
+    );
+    document.querySelector("#result-count").textContent =
+      `${matches.length} doctor${matches.length === 1 ? "" : "s"} found`;
+    document.querySelector("#results").innerHTML = matches.length
+      ? matches.map(doctorCard).join("")
+      : `<div class="empty span-two"><h2>${saved ? "No saved doctors yet" : "No doctors found"}</h2><p>Try changing your search or filters.</p><button class="btn" id="clear-empty">Clear Filters</button></div>`;
+    document.querySelector("#clear-empty")?.addEventListener("click", clear);
+  };
+  function clear() {
+    document.querySelectorAll(".filters select").forEach((x) => (x.value = ""));
+    document.querySelector("#doctor-search").value = "";
+    update();
+  }
+  document.querySelector("#clear").onclick = clear;
+  document.querySelectorAll("select").forEach((x) => (x.onchange = update));
+  document.querySelector("#doctor-search").oninput = update;
+  document.querySelector("#filter-toggle").onclick = () => {
+    const region = document.querySelector("#filter-region");
+    region.classList.toggle("open");
+    document
+      .querySelector("#filter-toggle")
+      .setAttribute("aria-expanded", region.classList.contains("open"));
+  };
+  document.querySelector("#show-results").onclick = () => {
+    document.querySelector("#filter-region").classList.remove("open");
+    document
+      .querySelector("#filter-toggle")
+      .setAttribute("aria-expanded", "false");
+  };
+  document.addEventListener("favorites-changed", () => {
+    if (saved) update();
+  });
+  update();
+}
+function info() {
+  main.className = "container page";
+  if (page === "about.html") {
+    main.innerHTML = `${pageTitle("LIFE DESERVES CARE", "Healthcare that feels simple.", "Built for India. Designed for the World.")}<div class="family-panel"><div><h2>Care starts<br>with a conversation.</h2><p>Medergency brings the essential parts of online care into one thoughtful experience: finding your doctor, booking a time and keeping your consultation records together.</p><a class="btn" href="doctors.html">Find a Doctor ${icon("arrow")}</a></div><div class="family-list">${[
+      ["clock", "Quick access"],
+      ["stethoscope", "Qualified doctors"],
+      ["lock", "Private experience"],
+      ["file", "Digital prescriptions"],
+    ]
+      .map(
+        ([i, t]) =>
+          `<div><span class="icon-tile">${icon(i)}</span><h3>${t}</h3></div>`,
+      )
+      .join(
+        "",
+      )}</div></div><section class="panel service-info"><h2>Service availability</h2><p>You can currently browse the care directory and organise appointments on this device. Doctor profiles are illustrative and are not verified clinician listings. Live consultations, SMS verification, online payments and prescription signing are not connected yet.</p><a class="text-link" href="support.html">Contact & support ${icon("arrow")}</a></section>`;
+  } else if (page === "privacy.html" || page === "terms.html") {
+    const privacy = page === "privacy.html";
+    main.innerHTML = `<div class="prose">${pageTitle("MEDERGENCY", privacy ? "Privacy & your information." : "Service information.")}<h2>${privacy ? "Information on your device" : "Available features"}</h2><p>${privacy ? "Your profile, saved doctors, appointments, preferences and notifications are stored on this browser. Booking details are kept temporarily while you complete the booking steps. This information is not uploaded to a patient account service. Avoid entering sensitive medical information on a shared device." : "Browse the care directory, select a consultation time and organise your records on this device. Live medical consultations, payment collection and SMS verification are not connected yet. Locally saved appointments are not confirmed by a clinician."}</p><h2>${privacy ? "Payments and communication" : "Doctor profiles and prescriptions"}</h2><p>${privacy ? "Payment entries are never saved or transmitted. The consultation room does not access your camera or microphone. Messages remain in the current room until you leave. Support requests are saved locally and are not delivered to a support team. The typefaces are loaded from Google Fonts." : "Directory profiles are illustrative, not verified clinician listings. A consultation record does not constitute medical advice. Prescriptions must be reviewed and signed by an authorised healthcare professional before they can be used for treatment."}</p><h2>${privacy ? "Your choices" : "Emergency care"}</h2><p>${privacy ? "Settings lets you clear locally saved records. Signing out ends your local session while preserving your records on this browser. Your device and browser control access to this information; local sign-in is not server authentication." : "For medical emergencies, contact your local emergency services or go to the nearest emergency facility."}</p><a class="btn secondary" href="${privacy ? "settings.html" : "support.html"}">${privacy ? "Manage local data" : "Contact support"}</a></div>`;
+  } else {
+    main.innerHTML = `<div class="empty"><span class="eyebrow">404 · A LITTLE DETOUR</span><h1>This page seems to have<br>taken a wrong turn.</h1><p>Let’s get you back to the care you’re looking for.</p><div class="actions center"><a class="btn" href="index.html">Go Home</a><a class="btn secondary" href="doctors.html">Find a Doctor</a></div></div>`;
+  }
+}
+if (page === "index.html") home();
+else if (page === "doctors.html" || page === "saved-doctors.html")
+  directory(page === "saved-doctors.html");
+else if (
+  [
+    "doctor-profile.html",
+    "booking.html",
+    "payment.html",
+    "confirmation.html",
+    "waiting-room.html",
+    "consultation.html",
+    "completed.html",
+  ].includes(page)
+) {
+  const { renderBooking } = await import("./booking.js");
+  renderBooking(main, page);
+} else if (
+  [
+    "dashboard.html",
+    "consultations.html",
+    "prescriptions.html",
+    "prescription-view.html",
+    "profile.html",
+    "settings.html",
+    "notifications.html",
+    "login.html",
+    "otp.html",
+    "support.html",
+  ].includes(page)
+) {
+  const { renderAccount } = await import("./account.js");
+  renderAccount(main, page);
+} else info();
+const menuButton = document.querySelector(".menu-toggle");
+const navigation = document.querySelector("#navigation");
+menuButton.setAttribute("aria-controls", "navigation");
+function setMenu(open) {
+  navigation.classList.toggle("open", open);
+  menuButton.setAttribute("aria-expanded", String(open));
+  menuButton.setAttribute(
+    "aria-label",
+    open ? "Close navigation" : "Open navigation",
+  );
+  document.body.style.overflow = open ? "hidden" : "";
+  document.querySelector("main").inert = open;
+  document.querySelector("footer").inert = open;
+  if (open) navigation.querySelector("a").focus();
+  else menuButton.focus();
+}
+menuButton.onclick = () => setMenu(!navigation.classList.contains("open"));
+navigation.addEventListener("click", (event) => {
+  if (event.target.closest("a") && navigation.classList.contains("open"))
+    setMenu(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (!navigation.classList.contains("open")) return;
+  if (event.key === "Escape") {
+    setMenu(false);
+    return;
+  }
+  if (event.key === "Tab") {
+    const items = [...navigation.querySelectorAll("a"), menuButton];
+    const first = items[0],
+      last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+});
+window.addEventListener("resize", () => {
+  if (innerWidth > 950 && navigation.classList.contains("open")) setMenu(false);
+});
+window.addEventListener("error", () =>
+  toast("Something went wrong. Refresh the page and try again."),
+);
+window.addEventListener("unhandledrejection", () =>
+  toast(
+    "We couldn’t save that change. Check your browser storage and try again.",
+  ),
+);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-favorite]");
+  if (!button) return;
+  const id = Number(button.dataset.favorite),
+    saved = storage.get("favorites", []),
+    exists = saved.includes(id);
+  storage.set(
+    "favorites",
+    exists ? saved.filter((x) => x !== id) : [...saved, id],
+  );
+  button.classList.toggle("saved", !exists);
+  button.setAttribute("aria-pressed", !exists);
+  toast(exists ? "Doctor removed from saved list." : "Doctor saved.");
+  document.dispatchEvent(new Event("favorites-changed"));
+});
+const observer = new IntersectionObserver(
+  (entries) =>
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("reveal");
+        observer.unobserve(entry.target);
+      }
+    }),
+  { threshold: 0.1 },
+);
+document
+  .querySelectorAll(".specialty-card,.step,.family-panel")
+  .forEach((el) => observer.observe(el));
+if (
+  document.querySelector("#doctor-search") &&
+  document.modelContext?.registerTool
+) {
+  try {
+    const lifecycle = new AbortController();
+    document.modelContext.registerTool(
+      {
+        name: "filter_doctors",
+        title: "Filter doctors",
+        description:
+          "Filter the visible doctor directory by name, specialty or qualification. Does not book a consultation.",
+        inputSchema: {
+          type: "object",
+          properties: { query: { type: "string" } },
+          required: ["query"],
+          additionalProperties: false,
+        },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        execute(input) {
+          if (typeof input?.query !== "string" || input.query.length > 100)
+            throw new Error("Provide a query of at most 100 characters.");
+          const search = document.querySelector("#doctor-search");
+          if (!search) throw new Error("Open the Find Doctors page first.");
+          search.value = input.query;
+          search.dispatchEvent(new Event("input", { bubbles: true }));
+          return {
+            result: document.querySelector("#result-count").textContent,
+          };
+        },
+      },
+      { signal: lifecycle.signal },
+    );
+    window.addEventListener("pagehide", () => lifecycle.abort(), {
+      once: true,
+    });
+  } catch {}
+}

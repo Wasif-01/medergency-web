@@ -1,13 +1,26 @@
 # Validation
 
-- Passed JavaScript syntax checks for application modules.
-- Static production output generated successfully.
-- Browser-tested directory filtering, including valid WebMCP filter input and intentional rejection of invalid input without changing the result.
-- Browser-tested missing-time validation, slot selection, patient form required errors, patient details, booking review, card-method switching and simulated payment confirmation.
-- Browser-tested waiting-room progression, call timer, camera toggle, chat message submission, end-call confirmation and completed consultation record.
-- Prescription view rendered from the completed appointment; no medications or treatment were generated.
-- Document width equalled viewport width in measured 320px homepage and 375px doctor-profile, payment and prescription views.
-- Mobile navigation opened and closed correctly. Desktop and mobile screenshots reviewed.
-- No browser console errors were reported during the checked journey.
-- Responsive rules cover additional breakpoints, but every listed device size and secondary interaction was not individually browser-tested.
-- Print / Save as PDF relies on the native browser print dialog. No actual PDF export or external backend services were tested.
+Validated on 9 September 2026.
+
+## Automated checks
+
+- `npm run check` passed for all JavaScript modules.
+- `npm run build` produced the complete static site in `dist/`.
+- All 24 HTML pages and 33 public build files were present.
+- Internal page, asset, and fragment links passed the link audit.
+- `git diff --check` passed.
+- The public source branding audit passed.
+
+## Browser checks
+
+- Homepage, doctor directory, profile, booking, payment, confirmation, waiting room, consultation, completion, dashboard, prescriptions, account, support, and 404 views rendered successfully.
+- Doctor search, specialty filters, fee sorting, and saved-doctor persistence worked after reload.
+- Booking validation, consultation type selection, slot availability, patient details, payment option switching, confirmation, and rescheduling worked end to end.
+- Waiting-room readiness, consultation controls, local chat, end-call confirmation, and completion worked.
+- Guest access, profile validation and persistence, settings, notifications, and support request storage worked.
+- Layout was checked without horizontal overflow at 320, 360, 375, 390, 414, 768, 1024, 1280, and 1440 pixel viewport widths.
+- Mobile consultation selectors and navigation controls were checked for readable spacing and keyboard-friendly behavior.
+
+## Production connections still required
+
+Video and audio calling, SMS delivery, payment processing, doctor availability, support delivery, authentication, secure patient records, and clinician-issued prescriptions require production services and appropriate healthcare compliance controls.
